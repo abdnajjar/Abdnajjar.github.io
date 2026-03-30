@@ -1,95 +1,751 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8">
-  <title>Abdelrahman Najjar | Backend Engineer</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Abdelrahman Najjar — Senior Software Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #1a1a24;
+      --border: rgba(255,255,255,0.07);
+      --text: #e8e6f0;
+      --text-muted: #7a7890;
+      --accent: #6ee7b7;
+      --accent2: #818cf8;
+      --accent3: #f472b6;
+      --glow: rgba(110,231,183,0.15);
+      --tag-bg: rgba(110,231,183,0.08);
+      --tag-text: #6ee7b7;
+      --card-hover: rgba(255,255,255,0.03);
+      --transition: 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    [data-theme="light"] {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #eeecf5;
+      --border: rgba(0,0,0,0.08);
+      --text: #1a1830;
+      --text-muted: #7a7890;
+      --accent: #059669;
+      --accent2: #4f46e5;
+      --accent3: #be185d;
+      --glow: rgba(5,150,105,0.1);
+      --tag-bg: rgba(5,150,105,0.08);
+      --tag-text: #047857;
+      --card-hover: rgba(0,0,0,0.02);
+    }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background: #f9f9f9;
-      color: #333;
+      font-family: 'DM Mono', monospace;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
     }
-    h1, h2 {
-      color: #222;
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.5;
     }
-    .section {
-      margin-bottom: 40px;
+
+    /* ── THEME TOGGLE ── */
+    #theme-toggle {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 100;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 100px;
+      padding: 0.45rem 1rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all var(--transition);
+      backdrop-filter: blur(10px);
     }
-    .card {
-      background: white;
-      padding: 15px;
-      margin-top: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    #theme-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
     }
-    a {
-      color: #0073e6;
+    .toggle-icon { font-size: 0.9rem; transition: transform 0.4s; }
+    #theme-toggle:hover .toggle-icon { transform: rotate(20deg); }
+
+    /* ── LAYOUT ── */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 7rem 0 4rem;
+      position: relative;
+    }
+
+    .hero-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.6s ease forwards 0.1s;
+    }
+
+    .hero-name {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.0;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.2s;
+    }
+
+    .hero-name em {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-title {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      color: var(--text-muted);
+      margin-top: 1.2rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.35s;
+    }
+
+    .hero-title span {
+      color: var(--accent2);
+    }
+
+    .hero-desc {
+      max-width: 580px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.88rem;
+      line-height: 1.8;
+      color: var(--text-muted);
+      margin-top: 2rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.5s;
+    }
+
+    .hero-contacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards 0.65s;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
       text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.9rem;
+      border-radius: 100px;
+      background: var(--surface);
+      transition: all var(--transition);
+    }
+    .contact-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 16px var(--glow);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── SECTIONS ── */
+    section {
+      padding: 4rem 0;
+    }
+
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 2rem;
+    }
+
+    /* ── EXPERIENCE ── */
+    .exp-list { display: flex; flex-direction: column; gap: 0; }
+
+    .exp-item {
+      display: grid;
+      grid-template-columns: 1fr;
+      padding: 2rem 0;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      transition: background var(--transition);
+    }
+
+    .exp-item:last-child { border-bottom: none; }
+
+    .exp-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .exp-role {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .exp-period {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+
+    .exp-company {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent2);
+      letter-spacing: 0.04em;
+      margin-bottom: 1rem;
+    }
+
+    .exp-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .exp-bullets li {
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      padding-left: 1.2rem;
+      position: relative;
+    }
+
+    .exp-bullets li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 0.75rem;
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1rem;
+    }
+
+    .skill-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--glow), transparent);
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .skill-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .skill-card:hover::before { opacity: 1; }
+
+    .skill-name {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text);
+      margin-bottom: 0.6rem;
+    }
+
+    .skill-level {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .skill-bar {
+      height: 2px;
+      background: var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    .skill-card.visible .skill-bar-fill { transform: scaleX(1); }
+
+    /* ── STATS ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 3rem;
+    }
+
+    .stat {
+      background: var(--surface);
+      padding: 1.8rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    /* ── TAGS ── */
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.06em;
+      background: var(--tag-bg);
+      color: var(--tag-text);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-left {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .footer-left strong {
+      color: var(--text);
+    }
+
+    .footer-right {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-link {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .footer-link:hover { color: var(--accent); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ── GLOW BG ── */
+    .glow-blob {
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(110,231,183,0.04) 0%, transparent 70%);
+      pointer-events: none;
+      top: -200px;
+      right: -200px;
+      z-index: 0;
+      animation: blobMove 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes blobMove {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-60px, 80px); }
+    }
+
+    [data-theme="light"] .glow-blob {
+      background: radial-gradient(circle, rgba(5,150,105,0.06) 0%, transparent 70%);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 600px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .hero { padding: 5rem 0 3rem; }
+      .hero-contacts { gap: 0.6rem; }
     }
   </style>
 </head>
 <body>
 
-  <h1>Abdelrahman Najjar</h1>
-  <p><strong>Senior Software Engineer | Distributed Systems | Backend (Java, AWS)</strong></p>
+<div class="glow-blob"></div>
 
-  <div class="section">
-    <h2>About Me</h2>
-    <p>
-      Software Engineer with 15+ years of experience building scalable backend systems.
-      Specialized in distributed systems, pricing platforms, and large-scale migrations.
-      Currently working on high-impact systems in Amazon Pricing.
+<button id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+  <span class="toggle-icon" id="toggle-icon">☀️</span>
+  <span id="toggle-label">LIGHT</span>
+</button>
+
+<div class="container">
+
+  <!-- HERO -->
+  <header class="hero">
+    <p class="hero-eyebrow">// available for new opportunities</p>
+    <h1 class="hero-name">
+      Abdelrahman<br /><em>Najjar</em>
+    </h1>
+    <p class="hero-title">
+      Senior Software Engineer &nbsp;·&nbsp; <span>Distributed Systems</span> &nbsp;·&nbsp; AWS &nbsp;·&nbsp; Java
     </p>
-  </div>
-
-  <div class="section">
-    <h2>Key Projects</h2>
-
-    <div class="card">
-      <h3>Sliding Window Rate Limiter</h3>
-      <p>
-        Designed and implemented a rate limiter using queue-based sliding window logic.
-        Focused on time complexity optimization and real-world scalability.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>Distributed Pricing Engine (Concept)</h3>
-      <p>
-        Designed a system similar to real-world pricing orchestration:
-        handles multiple signals, fallback logic, and large-scale evaluations.
-        Includes architecture diagram and scaling considerations.
-      </p>
-    </div>
-
-    <div class="card">
-      <h3>Migration System Simulation</h3>
-      <p>
-        Simulated large-scale service migration with backward compatibility,
-        data consistency checks, and shadow testing strategies.
-      </p>
-    </div>
-
-  </div>
-
-  <div class="section">
-    <h2>Experience Highlights</h2>
-    <ul>
-      <li>Led migration of critical pricing logic from legacy systems to modern architecture</li>
-      <li>Worked on large-scale distributed systems handling high-volume evaluations</li>
-      <li>Improved debugging efficiency with internal tooling and log analysis</li>
-      <li>Led JDK upgrades and system-wide dependency modernization</li>
-    </ul>
-  </div>
-
-  <div class="section">
-    <h2>Contact</h2>
-    <p>
-      GitHub: <a href="#">Add your GitHub link</a><br>
-      LinkedIn: <a href="#">Add your LinkedIn link</a>
+    <p class="hero-desc">
+      15+ years designing and scaling distributed systems across global platforms. 
+      Former Amazon engineer with deep expertise in backend architecture, microservices, 
+      and large-scale system modernization. I care about clean code, operational excellence, 
+      and shipping things that last.
     </p>
-  </div>
+    <div class="hero-contacts">
+      <a href="mailto:abd.najjar@gmail.com" class="contact-link">
+        <span>✉</span> abd.najjar@gmail.com
+      </a>
+      <a href="https://linkedin.com/in/abdelrahman-najjar" target="_blank" class="contact-link">
+        <span>⟶</span> LinkedIn
+      </a>
+      <a href="tel:+12066371620" class="contact-link">
+        <span>✆</span> (206) 637-1620
+      </a>
+      <span class="contact-link" style="cursor:default">
+        <span class="status-dot"></span> Bothell, WA · Green Card
+      </span>
+    </div>
+  </header>
+
+  <hr class="divider" />
+
+  <!-- STATS -->
+  <section class="reveal">
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-number">15+</div>
+        <div class="stat-label">Years Experience</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">27</div>
+        <div class="stat-label">Services Modernized</div>
+      </div>
+      <div class="stat">
+        <div class="stat-number">90%</div>
+        <div class="stat-label">Ops Effort Reduced</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- EXPERIENCE -->
+  <section>
+    <p class="section-label reveal">// experience</p>
+
+    <div class="exp-list">
+
+      <div class="exp-item reveal">
+        <div class="exp-top">
+          <span class="exp-role">Software Development Engineer</span>
+          <span class="exp-period">Apr 2021 – Jan 2026</span>
+        </div>
+        <div class="exp-company">Amazon · Pricing Systems · Seattle, WA</div>
+        <ul class="exp-bullets">
+          <li>Led large-scale migrations from legacy pricing engines to modern orchestration systems across global marketplaces.</li>
+          <li>Architected automation frameworks for log analysis, alarm setup & UI enhancements — reducing operational effort by 90%.</li>
+          <li>Spearheaded JDK 17 and CloudAuth migrations across 27 services, improving security posture and performance.</li>
+          <li>Served as on-call lead during peak events like Black Friday, maintaining high system availability under heavy load.</li>
+          <li>Authored onboarding & incident-response guides adopted across teams, reducing mean time to recovery.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Java</span>
+          <span class="tag">AWS</span>
+          <span class="tag">Microservices</span>
+          <span class="tag">CI/CD</span>
+          <span class="tag">JDK 17</span>
+          <span class="tag">CloudAuth</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-top">
+          <span class="exp-role">Software Development Engineer</span>
+          <span class="exp-period">Nov 2019 – Apr 2021</span>
+        </div>
+        <div class="exp-company">Amazon AWS · IAM Core Engine · Seattle, WA</div>
+        <ul class="exp-bullets">
+          <li>Engineered migration of AWS IAM authentication from monolithic DB to sharded distributed architecture — improving global reliability and reducing request latency for millions of accounts.</li>
+          <li>Designed shard-routing and data-access layers leveraging DynamoDB, connection pooling, and shard-aware operations.</li>
+          <li>Integrated sharding support across GDPR, Account Recovery, and Root Account Management APIs.</li>
+          <li>Built the Database CName Checker, automating failover validation during shard transitions.</li>
+          <li>Automated developer environment setup (RDE tooling), cutting onboarding time from days to hours.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">DynamoDB</span>
+          <span class="tag">Distributed Systems</span>
+          <span class="tag">IAM</span>
+          <span class="tag">Sharding</span>
+          <span class="tag">Java</span>
+        </div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-top">
+          <span class="exp-role">Software Development Engineer</span>
+          <span class="exp-period">Jan 2013 – Nov 2019</span>
+        </div>
+        <div class="exp-company">Souq.com (Amazon Subsidiary) · Amman, Jordan</div>
+        <ul class="exp-bullets">
+          <li>Drove integration of Souq's WMS into Amazon's global fulfillment infrastructure post-acquisition.</li>
+          <li>Developed backend integration services and data pipelines aligning legacy systems with Amazon's service stack.</li>
+          <li>Modernized Opentaps ERP and Apache OFBiz frameworks for rapidly growing regional operations.</li>
+          <li>Engineered workflow automation using ActiveMQ for robust, fault-tolerant data exchange.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">ERP</span>
+          <span class="tag">ActiveMQ</span>
+          <span class="tag">Apache OFBiz</span>
+          <span class="tag">WMS</span>
+          <span class="tag">Backend</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- SKILLS -->
+  <section>
+    <p class="section-label reveal">// skills</p>
+    <div class="skills-grid">
+      <div class="skill-card reveal">
+        <div class="skill-name">Java</div>
+        <div class="skill-level">Expert</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-name">OOP & Design</div>
+        <div class="skill-level">Expert</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:100%"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-name">AWS Services</div>
+        <div class="skill-level">Advanced</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-name">Distributed Systems</div>
+        <div class="skill-level">Advanced</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-name">Microservices</div>
+        <div class="skill-level">Advanced</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-name">SQL & NoSQL</div>
+        <div class="skill-level">Advanced</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-name">Software Design</div>
+        <div class="skill-level">Advanced</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:88%"></div></div>
+      </div>
+      <div class="skill-card reveal">
+        <div class="skill-name">Agile / Scrum</div>
+        <div class="skill-level">Advanced</div>
+        <div class="skill-bar"><div class="skill-bar-fill" style="width:88%"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- EDUCATION -->
+  <section class="reveal">
+    <p class="section-label">// education</p>
+    <div class="exp-item" style="border-bottom:none; padding-top:0;">
+      <div class="exp-top">
+        <span class="exp-role">B.Sc. Software Engineering</span>
+        <span class="exp-period">2005 – 2009</span>
+      </div>
+      <div class="exp-company">Philadelphia University · Jordan</div>
+    </div>
+  </section>
+
+  <hr class="divider" />
+
+  <!-- FOOTER -->
+  <footer class="reveal">
+    <div class="footer-left">
+      <strong>Abdelrahman Najjar</strong> &nbsp;·&nbsp; Senior Software Engineer<br />
+      <span style="font-size:0.65rem">English (Fluent) · Arabic (Native)</span>
+    </div>
+    <div class="footer-right">
+      <a href="mailto:abd.najjar@gmail.com" class="footer-link">Email</a>
+      <a href="https://linkedin.com/in/abdelrahman-najjar" class="footer-link" target="_blank">LinkedIn</a>
+      <a href="tel:+12066371620" class="footer-link">Phone</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // ── THEME TOGGLE ──
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    document.getElementById('toggle-icon').textContent = isDark ? '🌙' : '☀️';
+    document.getElementById('toggle-label').textContent = isDark ? 'DARK' : 'LIGHT';
+  }
+
+  // ── SCROLL REVEAL ──
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.classList.add('visible');
+        }, 60);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // ── SKILL BAR TRIGGER ──
+  const skillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        skillObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  document.querySelectorAll('.skill-card').forEach(el => skillObserver.observe(el));
+</script>
 
 </body>
 </html>
